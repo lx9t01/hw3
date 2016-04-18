@@ -57,7 +57,7 @@ cudaProdScaleKernel(const cufftComplex *raw_data, const cufftComplex *impulse_v,
     while (thread_index < padded_length) {
         out_data[thread_index].x = raw_data[thread_index].x * impulse_v[thread_index].x;
         out_data[thread_index].x -= raw_data[thread_index].y * impulse_v[thread_index].y;
-        out_data[thread_index].x /= out_data[thread_index].x;
+        out_data[thread_index].x /= padded_length;
         thread_index += blockDim.x * gridDim.x;
     }
 
