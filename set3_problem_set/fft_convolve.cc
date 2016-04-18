@@ -438,7 +438,7 @@ int large_gauss_test(int argc, char **argv){
         // Check for errors on kernel call
         cudaError err = cudaGetLastError();
         if  (cudaSuccess != err){
-                cerr << "Error " << cudaGetErrorString(err) << endl;
+                cerr << "Error prodscale" << cudaGetErrorString(err) << endl;
         } else {
                 cerr << "No kernel error detected" << endl;
         }
@@ -568,7 +568,7 @@ int large_gauss_test(int argc, char **argv){
         // Check for errors on kernel call
         err = cudaGetLastError();
         if  (cudaSuccess != err){
-                cerr << "Error " << cudaGetErrorString(err) << endl;
+                cerr << "Error max" << cudaGetErrorString(err) << endl;
         } else {
                 cerr << "No kernel error detected" << endl;
         }
@@ -583,7 +583,7 @@ int large_gauss_test(int argc, char **argv){
         // Check for errors on kernel call
         err = cudaGetLastError();
         if  (cudaSuccess != err){
-                cerr << "Error " << cudaGetErrorString(err) << endl;
+                cerr << "Error divide" << cudaGetErrorString(err) << endl;
         } else {
                 cerr << "No kernel error detected" << endl;
         }
