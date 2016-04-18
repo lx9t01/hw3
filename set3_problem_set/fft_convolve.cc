@@ -410,8 +410,8 @@ int large_gauss_test(int argc, char **argv){
         (See Lecture 9 for details on padding.)
         Set the rest of the memory regions to 0 (recommend using cudaMemset).
         */
-        cudaMemset(dev_input_data + N , 0, (impulse_length - 1) * sizeof(cufftComplex));
-        cudaMemset(dev_impulse_v + impulse_length, 0, (N - 1) * sizeof(cufftComplex));
+        cudaMemset(dev_input_data + N , 0, (padded_length - impulse_length) * sizeof(cufftComplex));
+        cudaMemset(dev_impulse_v + impulse_length, 0, (padded_length - N) * sizeof(cufftComplex));
 
         /* Create a cuFFT plan for the forward and inverse transforms. 
         (You can use the same plan for both, as is done in the lecture examples.)
@@ -423,7 +423,7 @@ int large_gauss_test(int argc, char **argv){
         /* Run the forward DFT on the input signal and the impulse response. 
         (Do these in-place.) */
         cufftExecC2C(plan, dev_input_data, dev_input_data, CUFFT_FORWARD);
-
+        cufftExecC2C(plan, dev_impulse_v, dev_impulse_v, CUFFT_FORWARD);
 
 
 
