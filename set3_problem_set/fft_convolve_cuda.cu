@@ -55,13 +55,12 @@ cudaProdScaleKernel(const cufftComplex *raw_data, const cufftComplex *impulse_v,
     */
     unsigned int thread_index = blockIdx.x * blockDim.x + threadIdx.x;
 
-    if (thread_index == 0) 
-        printf("%d\n", &padded_length);
-    else return;
+    
+    printf("%d\n", &padded_length);
+    
 
     while (thread_index < padded_length) {
-        out_data[thread_index].x = raw_data[thread_index].x * impulse_v[thread_index].x;
-        out_data[thread_index].x -= raw_data[thread_index].y * impulse_v[thread_index].y;
+        out_data[thread_index].x = raw_data[thread_index].x * impulse_v[thread_index].x - raw_data[thread_index].y * impulse_v[thread_index].y;
         out_data[thread_index].x /= padded_length;
         thread_index += blockDim.x * gridDim.x;
     }

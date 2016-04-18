@@ -604,7 +604,7 @@ int large_gauss_test(int argc, char **argv){
 
         Note that we have a padded-length signal, so be careful of the
         size of the memory copy. */
-        cudaMemcpy(output_data, dev_out_data, N * sizeof(float), cudaMemcpyDeviceToHost);
+        cudaMemcpy(output_data, dev_out_data, padded_length * sizeof(float), cudaMemcpyDeviceToHost);
 
 
         cout << endl;
