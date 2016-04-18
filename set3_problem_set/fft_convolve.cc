@@ -418,12 +418,12 @@ int large_gauss_test(int argc, char **argv){
         */
         cufftHandle plan;
         int batch = 1;
-        cufftPlan1d(&plan, padded_length, CUFFT_C2C, batch);
+        gpuFFTchk(cufftPlan1d(&plan, padded_length, CUFFT_C2C, batch));
 
         /* Run the forward DFT on the input signal and the impulse response. 
         (Do these in-place.) */
-        cufftExecC2C(plan, dev_input_data, dev_input_data, CUFFT_FORWARD);
-        cufftExecC2C(plan, dev_impulse_v, dev_impulse_v, CUFFT_FORWARD);
+        gpuFFTchk(cufftExecC2C(plan, dev_input_data, dev_input_data, CUFFT_FORWARD));
+        gpuFFTchk(cufftExecC2C(plan, dev_impulse_v, dev_impulse_v, CUFFT_FORWARD));
 
 
 
@@ -450,11 +450,11 @@ int large_gauss_test(int argc, char **argv){
 
         /* Run the inverse DFT on the output signal. 
         (Do this in-place.) */
-        cufftExecC2C(plan, dev_out_data, dev_out_data, CUFFT_INVERSE);
+        gpuFFTchk(cufftExecC2C(plan, dev_out_data, dev_out_data, CUFFT_INVERSE));
 
 
         /* Destroy the cuFFT plan. */
-        cufftDestroy(plan);
+        gpuFFTchk(cufftDestroy(plan));
 
         // For testing and timing-control purposes only
         gpuErrchk( cudaMemcpy( output_data_testarr, dev_out_data, padded_length * sizeof(cufftComplex), cudaMemcpyDeviceToHost));
