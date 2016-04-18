@@ -177,7 +177,7 @@ int large_gauss_test(int argc, char **argv){
     parameter to control how many trials we run. */
 
     int nChannels = 1;      // Can set as the number of trials
-    int N = 1e5;        // Can set how many data points arbitrarily
+    int N = 1e4;        // Can set how many data points arbitrarily
     int impulse_length = GAUSSIAN_SIZE;
 
 #endif
@@ -240,14 +240,14 @@ int large_gauss_test(int argc, char **argv){
     cufftComplex *dev_impulse_v;
     cufftComplex *dev_out_data;
 
-    /* Allocate memory for these three arrays on the GPU. 
+    /* TODOok: Allocate memory for these three arrays on the GPU. 
 
     Note that we need to allocate more memory than on Homework 1,
     due to the padding necessary for the FFT convolution. 
 
     Also, unlike in Homework 1, we don't copy our impulse response
     yet, because this is now given to us per-channel. */
-    cudaMalloc((void**) &dev_input_data, sizeof(cufftComplex) * padded_length); //??size??
+    cudaMalloc((void**) &dev_input_data, sizeof(cufftComplex) * padded_length); 
     cudaMalloc((void**) &dev_impulse_v, sizeof(cufftComplex) * padded_length);
     cudaMalloc((void**) &dev_out_data, sizeof(cufftComplex) * padded_length);
 
@@ -383,7 +383,7 @@ int large_gauss_test(int argc, char **argv){
 
 
 
-        /* Copy this channel's input data (stored in input_data)
+        /* TODOok: Copy this channel's input data (stored in input_data)
         from host memory to the GPU. 
 
         Note that input_data only stores
