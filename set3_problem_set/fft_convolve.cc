@@ -21,7 +21,7 @@ using std::endl;
 
 const float PI = 3.14159265358979;
 
-#define AUDIO_ON 1
+#define AUDIO_ON 0
 
 #if AUDIO_ON
     #include <sndfile.h>
@@ -240,15 +240,16 @@ int large_gauss_test(int argc, char **argv){
     cufftComplex *dev_impulse_v;
     cufftComplex *dev_out_data;
 
-    /* TODO: Allocate memory for these three arrays on the GPU. 
+    /* Allocate memory for these three arrays on the GPU. 
 
     Note that we need to allocate more memory than on Homework 1,
     due to the padding necessary for the FFT convolution. 
 
     Also, unlike in Homework 1, we don't copy our impulse response
     yet, because this is now given to us per-channel. */
-
-
+    cudaMalloc((void**) &dev_input_data, sizeof(cufftComplex) * padded_length); //??size??
+    cudaMalloc((void**) &dev_impulse_v, sizeof(cufftComplex) * padded_length);
+    cudaMalloc((void**) &dev_out_data, sizeof(cufftComplex) * padded_length);
 
 
 
@@ -382,17 +383,18 @@ int large_gauss_test(int argc, char **argv){
 
 
 
-        /* TODO: Copy this channel's input data (stored in input_data)
+        /* Copy this channel's input data (stored in input_data)
         from host memory to the GPU. 
 
         Note that input_data only stores
         x[n] as read from the input audio file, and not the padding, 
         so be careful with the size of your memory copy. */
+        cudaMemcpy(dev_input_data, input_data, N * sizeof(cufftComplex), cudaMemcpyHostToDevice);
 
 
 
 
-        /* TODO: Copy this channel's impulse response data (stored in impulse_data)
+        /* Copy this channel's impulse response data (stored in impulse_data)
         from host memory to the GPU. 
 
         Like input_data, impulse_data
@@ -400,22 +402,27 @@ int large_gauss_test(int argc, char **argv){
         and not the padding, so again, be careful with the size
         of your memory copy. (It's not the same size as the input_data copy.)
         */
+        cudaMemcpy(dev_impulse_v, impulse_data, impulse_length * sizeof(cufftComplex), cudaMemcpyHostToDevice);
 
 
-        /* TODO: We're only copying to part of the allocated
+        /* We're only copying to part of the allocated
         memory regions on the GPU above, and we still need to zero-pad.
         (See Lecture 9 for details on padding.)
         Set the rest of the memory regions to 0 (recommend using cudaMemset).
         */
+        cudaMemset(dev_input_data + N, 0, impulse_length - 1);
+        cudaMemset(dev_impulse_v + impulse_length, 0, N - 1);
 
-
-        /* TODO: Create a cuFFT plan for the forward and inverse transforms. 
+        /* Create a cuFFT plan for the forward and inverse transforms. 
         (You can use the same plan for both, as is done in the lecture examples.)
         */
+        cufftHandle plan;
+        int batch = 1;
+        cufftPlan1d(&plan, padded_length, CUFFT_C2C, batch);
 
-
-        /* TODO: Run the forward DFT on the input signal and the impulse response. 
+        /* Run the forward DFT on the input signal and the impulse response. 
         (Do these in-place.) */
+        cufftExecC2C(plan, dev_input_data, dev_input_data, CUFFT_FORWARD);
 
 
 
@@ -441,13 +448,13 @@ int large_gauss_test(int argc, char **argv){
 
 
 
-        /* TODO: Run the inverse DFT on the output signal. 
+        /* Run the inverse DFT on the output signal. 
         (Do this in-place.) */
+        cufftExecC2C(plan, dev_out_data, dev_out_data, CUFFT_INVERSE);
 
 
-
-        /* TODO: Destroy the cuFFT plan. */
-
+        /* Destroy the cuFFT plan. */
+        cufftDestroy(plan);
 
         // For testing and timing-control purposes only
         gpuErrchk( cudaMemcpy( output_data_testarr, dev_out_data, padded_length * sizeof(cufftComplex), cudaMemcpyDeviceToHost));
@@ -591,12 +598,13 @@ int large_gauss_test(int argc, char **argv){
 
 
 
-        /* TODO: Now that kernel calls have finished, copy the output
+        /* TODOok: Now that kernel calls have finished, copy the output
         signal back from the GPU to host memory. (We store this channel's
         result in output_data on the host.)
 
         Note that we have a padded-length signal, so be careful of the
         size of the memory copy. */
+        cudaMemcpy(output_data, dev_out_data, N * sizeof(cufftComplex), cudaMemcpyDeviceToHost);
 
 
         cout << endl;
