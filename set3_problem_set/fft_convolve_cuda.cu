@@ -116,8 +116,8 @@ cudaMaximumKernel(cufftComplex *out_data, float *max_abs_val,
 
     while (i < padded_length) {
         data[threadIdx.x] = out_data[i].x;
-        for (int i = 9; i >= 0; i--) {
-            int bias = 1 << i;
+        for (int j = 9; j >= 0; j--) {
+            int bias = 1 << j;
             while (threadIdx.x < bias) {
                 data[threadIdx.x] = (abs(data[threadIdx.x])>abs(data[threadIdx.x + bias]))? \
                             abs(data[threadIdx.x]):abs(data[threadIdx.x + bias]);
