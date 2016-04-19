@@ -115,7 +115,7 @@ cudaMaximumKernel(cufftComplex *out_data, float *max_abs_val,
     unsigned int i = threadIdx.x + 1024 * blockIdx.x;
 
     while (i < padded_length) {
-        data[threadIdx.x] = out_data[i];
+        data[threadIdx.x] = out_data[i].x;
         for (int i = 9; i >= 0; i--) {
             int bias = 1 << i;
             while (threadIdx.x < bias) {
@@ -140,7 +140,7 @@ cudaDivideKernel(cufftComplex *out_data, float *max_abs_val,
     */
     unsigned int thread_index = blockIdx.x * blockDim.x + threadIdx.x;
     while (thread_index < padded_length) {
-        out_data[thread_index] /= *max_abs_val;
+        out_data[thread_index].x /= *max_abs_val;
     }
     thread_index += blockDim.x * gridDim.x;
 
