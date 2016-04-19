@@ -40,7 +40,7 @@ cudaProdScaleKernel(const cufftComplex *raw_data, const cufftComplex *impulse_v,
     int padded_length) {
 
 
-    /* TODO: Implement the point-wise multiplication and scaling for the
+    /* TODO ok: Implement the point-wise multiplication and scaling for the
     FFT'd input and impulse response. 
 
     Recall that these are complex numbers, so you'll need to use the
