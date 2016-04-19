@@ -115,6 +115,7 @@ cudaMaximumKernel(cufftComplex *out_data, float *max_abs_val,
     unsigned int i = threadIdx.x + blockDim.x * blockIdx.x;
 
     while (i < padded_length) {
+        printf("%d max\n", &i);
         data[threadIdx.x] = out_data[i].x;
         for (int j = 9; j >= 0; j--) {
             int bias = 1 << j;
@@ -134,13 +135,14 @@ void
 cudaDivideKernel(cufftComplex *out_data, float *max_abs_val,
     int padded_length) {
 
-    /* TODO 2: Implement the division kernel. Divide all
+    /* TODO 2 ok: Implement the division kernel. Divide all
     data by the value pointed to by max_abs_val. 
 
     This kernel should be quite short.
     */
     unsigned int thread_index = blockIdx.x * blockDim.x + threadIdx.x;
     while (thread_index < padded_length) {
+        printf("%d divide\n", &thread_index);
         out_data[thread_index].x /= *max_abs_val;
         thread_index += blockDim.x * gridDim.x;
     }
