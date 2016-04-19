@@ -593,11 +593,11 @@ int large_gauss_test(int argc, char **argv){
 
 
         STOP_RECORD_TIMER(gpu_time_ms_norm);
-
+        printf("timer stopped\n");
         // For testing purposes only
         gpuErrchk( cudaMemcpy(&max_abs_val_fromGPU, 
             dev_max_abs_val, 1 * sizeof(float), cudaMemcpyDeviceToHost) );
-
+        printf("memcopied\n");
 
 
         /* TODOok: Now that kernel calls have finished, copy the output
