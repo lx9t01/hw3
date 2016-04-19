@@ -112,7 +112,7 @@ cudaMaximumKernel(cufftComplex *out_data, float *max_abs_val,
 
 */
     __shared__ float data[1024];
-    unsigned int i = threadIdx.x + 1024 * blockIdx.x;
+    unsigned int i = threadIdx.x + blockDim.x * blockIdx.x;
 
     while (i < padded_length) {
         data[threadIdx.x] = out_data[i].x;
@@ -125,6 +125,7 @@ cudaMaximumKernel(cufftComplex *out_data, float *max_abs_val,
             }
         }
         atomicMax(max_abs_val, data[0]);
+        i += blockDim.x * gridDim.x;
     }
 }
 
@@ -141,8 +142,8 @@ cudaDivideKernel(cufftComplex *out_data, float *max_abs_val,
     unsigned int thread_index = blockIdx.x * blockDim.x + threadIdx.x;
     while (thread_index < padded_length) {
         out_data[thread_index].x /= *max_abs_val;
+        thread_index += blockDim.x * gridDim.x;
     }
-    thread_index += blockDim.x * gridDim.x;
 
 }
 
