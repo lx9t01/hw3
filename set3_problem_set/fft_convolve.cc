@@ -552,11 +552,13 @@ int large_gauss_test(int argc, char **argv){
         // NVM they need this for global ops
         // Also need to memset to 0 for baseline value
 
-        /* TODO 2: Allocate memory to store the maximum magnitude found. 
+        /* TODO 2 ok: Allocate memory to store the maximum magnitude found. 
         (You only need enough space for one floating-point number.) */
+        cudaMalloc((void**) &dev_max_abs_val, sizeof(float)); 
 
-        /* TODO 2: Set it to 0 in preparation for running. 
+        /* TODO 2 ok: Set it to 0 in preparation for running. 
         (Recommend using cudaMemset) */
+        cudaMemset(dev_max_abs_val, 0, sizeof(float));
 
 
         /* NOTE: This is a function in the fft_convolve_cuda.cu file,
