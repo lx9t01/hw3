@@ -14,6 +14,8 @@
 #include "fft_convolve_cuda.cuh"
 #include <cufft.h>
 
+#include "ta_utilities.hpp"
+
 
 using std::cerr;
 using std::cout;
