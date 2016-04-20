@@ -129,7 +129,10 @@ cudaMaximumKernel(cufftComplex *out_data, float *max_abs_val,
         __syncthreads();
         l /= 2;
     }
-    *max_abs_val = fabsf(data[0]);
+    if (threadIdx.x == 0) {
+        atomicMax(&max_abs_val, fabsf(data[0]));
+    }
+    
 
     // while (i < padded_length) {
 
