@@ -114,29 +114,45 @@ cudaMaximumKernel(cufftComplex *out_data, float *max_abs_val,
     
     unsigned int i = threadIdx.x + blockDim.x * blockIdx.x;
     __shared__ float data[1024];
-
     while (i < padded_length) {
-
-        data[threadIdx.x] = out_data[i].x;
-        __syncthreads();
-        int l = blockDim.x;
-        while (l > 1) {
-            int bias = l / 2;
-            if (threadIdx.x < bias) {
-                data[threadIdx.x] = (fabsf(data[threadIdx.x])>fabsf(data[threadIdx.x + bias]))? \
-                        data[threadIdx.x]:data[threadIdx.x + bias];
-            }
-            __syncthreads();
-            // if (threadIdx.x < bias) {
-            //     atomicMax(&data[threadIdx.x], data[threadIdx.x + bias]);
-            // }
-            l /= 2;
-        }
-        if (threadIdx.x == 0) {
-            atomicMax(max_abs_val, fabsf(data[0]));
-        }
+        atomicMax(&data[threadIdx.x], out_data[i].x);
         i += blockDim.x * gridDim.x;
     }
+
+    int l = blockDim.x;
+    while (l > 1) {
+        int bias = l / 2;
+        if (threadIdx.x < bias) {
+            data[threadIdx.x] = (fabsf(data[threadIdx.x])>fabsf(data[threadIdx.x + bias]))? \
+                         data[threadIdx.x]:data[threadIdx.x + bias];
+        }
+        __syncthreads();
+        l /= 2;
+    }
+    *max_abs_val = fabsf(data[0]);
+
+    // while (i < padded_length) {
+
+    //     data[threadIdx.x] = out_data[i].x;
+    //     __syncthreads();
+    //     int l = blockDim.x;
+    //     while (l > 1) {
+    //         int bias = l / 2;
+    //         if (threadIdx.x < bias) {
+    //             data[threadIdx.x] = (fabsf(data[threadIdx.x])>fabsf(data[threadIdx.x + bias]))? \
+    //                     data[threadIdx.x]:data[threadIdx.x + bias];
+    //         }
+    //         __syncthreads();
+    //         // if (threadIdx.x < bias) {
+    //         //     atomicMax(&data[threadIdx.x], data[threadIdx.x + bias]);
+    //         // }
+    //         l /= 2;
+    //     }
+    //     if (threadIdx.x == 0) {
+    //         atomicMax(max_abs_val, fabsf(data[0]));
+    //     }
+    //     i += blockDim.x * gridDim.x;
+    // }
 }
 
 __global__
