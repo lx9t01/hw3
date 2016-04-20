@@ -113,7 +113,7 @@ cudaMaximumKernel(cufftComplex *out_data, float *max_abs_val,
 */
     
     unsigned int i = threadIdx.x + blockDim.x * blockIdx.x;
-    __shared__ float data[1024];
+    __shared__ float data[512];
     while (i < padded_length) {
         atomicMax(&data[threadIdx.x], out_data[i].x);
         i += blockDim.x * gridDim.x;
