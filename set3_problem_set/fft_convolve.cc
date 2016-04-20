@@ -548,7 +548,7 @@ int large_gauss_test(int argc, char **argv){
 
         cout << "GPU normalization..." << endl;
 
-        START_TIMER();
+        // START_TIMER();
 
 
 
@@ -604,7 +604,7 @@ int large_gauss_test(int argc, char **argv){
 
 
         cerr << "before stop timer\n";
-        STOP_RECORD_TIMER(gpu_time_ms_norm);
+        // STOP_RECORD_TIMER(gpu_time_ms_norm);
         cerr << "timer stopped\n";
 
         // For testing purposes only
