@@ -116,23 +116,22 @@ cudaMaximumKernel(cufftComplex *out_data, float *max_abs_val,
     data[threadIdx.x] = 0;
 
     while (i < padded_length) {
-            if (i == 100) printf("%d max\n", &i);
-
-            data[threadIdx.x] = out_data[i].x;
-            __syncthreads();
-            int l = blockDim.x;
-            while (l > 1) {
-                int bias = l / 2;
-                while (threadIdx.x < bias) {
-                    data[threadIdx.x] = (fabs(data[threadIdx.x])>fabs(data[threadIdx.x + bias]))? \
-                            data[threadIdx.x]:data[threadIdx.x + bias];
-                    __syncthreads();
-                }
-                l /= 2;
+            // if (i == 100) printf("%d max\n", &i);
+        data[threadIdx.x] = out_data[i].x;
+        __syncthreads();
+        int l = blockDim.x;
+        while (l > 1) {
+            int bias = l / 2;
+            while (threadIdx.x < bias) {
+                data[threadIdx.x] = (fabs(data[threadIdx.x])>fabs(data[threadIdx.x + bias]))? \
+                        data[threadIdx.x]:data[threadIdx.x + bias];
+                __syncthreads();
             }
-            atomicMax(max_abs_val, fabs(data[0]));
-            i += blockDim.x * gridDim.x;
-        }  
+            l /= 2;
+        }
+        atomicMax(max_abs_val, fabs(data[0]));
+        i += blockDim.x * gridDim.x;
+    }
 }
 
 __global__
@@ -147,7 +146,7 @@ cudaDivideKernel(cufftComplex *out_data, float *max_abs_val,
     */
     unsigned int thread_index = blockIdx.x * blockDim.x + threadIdx.x;
     while (thread_index < padded_length) {
-        if (thread_index == 100) printf("%d divide\n", &thread_index);
+        // if (thread_index == 100) printf("%d divide\n", &thread_index);
         out_data[thread_index].x /= *max_abs_val;
         thread_index += blockDim.x * gridDim.x;
     }
