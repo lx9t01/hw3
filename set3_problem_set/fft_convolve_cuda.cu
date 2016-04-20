@@ -113,10 +113,10 @@ cudaMaximumKernel(cufftComplex *out_data, float *max_abs_val,
 */
     __shared__ float data[1024];
     unsigned int i = threadIdx.x + blockDim.x * blockIdx.x;
-    const int last = padded_length % 1024;
+    int last = padded_length % 1024;
     while (i < padded_length) {
         if (i >= padded_length - last) {
-            data[thread_index.x] = out_data[i].x;
+            data[threadIdx.x] = out_data[i].x;
             __syncthreads();
 
             while(last > 1) {
