@@ -455,14 +455,14 @@ int large_gauss_test(int argc, char **argv){
 
 
 
-        /* TODO: Run the inverse DFT on the output signal. 
+        /* TODO ok: Run the inverse DFT on the output signal. 
         (Do this in-place.) */
         gpuFFTchk(cufftExecC2C(plan, dev_out_data, dev_out_data, CUFFT_INVERSE));
 
 
 
 
-        /* TODO: Destroy the cuFFT plan. */
+        /* TODO ok: Destroy the cuFFT plan. */
         gpuFFTchk(cufftDestroy(plan));
 
 
