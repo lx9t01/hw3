@@ -603,9 +603,9 @@ int large_gauss_test(int argc, char **argv){
         }
 
 
-        printf("before stop timer\n");
+        cerr << "before stop timer\n";
         STOP_RECORD_TIMER(gpu_time_ms_norm);
-        printf("timer stopped\n");
+        cerr << "timer stopped\n";
 
         // For testing purposes only
         gpuErrchk( cudaMemcpy(&max_abs_val_fromGPU, 
