@@ -22,7 +22,7 @@ using std::endl;
 
 const float PI = 3.14159265358979;
 
-#define AUDIO_ON 1
+#define AUDIO_ON 0
 
 #if AUDIO_ON
     #include <sndfile.h>
@@ -692,7 +692,7 @@ int main(int argc, char **argv){
     // if you are using a shared computer. You may ignore or remove these
     // functions if you are running on your local machine.
     TA_Utilities::select_coldest_GPU();
-    int max_time_allowed_in_seconds = 180;
+    int max_time_allowed_in_seconds = 10;
     TA_Utilities::enforce_time_limit(max_time_allowed_in_seconds);
 
     return large_gauss_test(argc, argv);
