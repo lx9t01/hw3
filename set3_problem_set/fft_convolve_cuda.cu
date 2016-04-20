@@ -125,8 +125,8 @@ cudaMaximumKernel(cufftComplex *out_data, float *max_abs_val,
             if (threadIdx.x < bias) {
                 data[threadIdx.x] = (fabsf(data[threadIdx.x])>fabsf(data[threadIdx.x + bias]))? \
                         data[threadIdx.x]:data[threadIdx.x + bias];
-                __syncthreads();
             }
+            __syncthreads();
             l /= 2;
         }
         atomicMax(max_abs_val, fabsf(data[0]));
