@@ -113,41 +113,26 @@ cudaMaximumKernel(cufftComplex *out_data, float *max_abs_val,
 */
     __shared__ float data[1024];
     unsigned int i = threadIdx.x + blockDim.x * blockIdx.x;
-    int last = padded_length % 1024;
+    data[threadIdx.x] = 0;
+
     while (i < padded_length) {
-        if (i >= padded_length - last) {
-            data[threadIdx.x] = out_data[i].x;
-            __syncthreads();
-
-            while(last > 1) {
-                int bias = last / 2;
-                while (threadIdx.x < bias) {
-                    data[threadIdx.x] = (fabs(data[threadIdx.x])>fabs(data[threadIdx.x + bias]))? \
-                            data[threadIdx.x]:data[threadIdx.x + bias];
-                    __syncthreads();
-                }
-                last /= 2;
-            }
-            atomicMax(max_abs_val, fabs(data[0]));
-            i += blockDim.x * gridDim.x;
-
-        } else {
             if (i == 100) printf("%d max\n", &i);
+
             data[threadIdx.x] = out_data[i].x;
             __syncthreads();
-
-            for (int j = 9; j >= 0; j--) {
-                int bias = 1 << j;
+            int l = blockDim.x;
+            while (l > 0) {
+                int bias = l / 2;
                 while (threadIdx.x < bias) {
                     data[threadIdx.x] = (fabs(data[threadIdx.x])>fabs(data[threadIdx.x + bias]))? \
                             data[threadIdx.x]:data[threadIdx.x + bias];
                     __syncthreads();
                 }
+                l /= 2;
             }
             atomicMax(max_abs_val, fabs(data[0]));
             i += blockDim.x * gridDim.x;
         }  
-    }
 }
 
 __global__
