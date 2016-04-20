@@ -117,6 +117,8 @@ cudaMaximumKernel(cufftComplex *out_data, float *max_abs_val,
     while (i < padded_length) {
         if (i == 100) printf("%d max\n", &i);
         data[threadIdx.x] = out_data[i].x;
+        __syncthreads();
+        
         for (int j = 9; j >= 0; j--) {
             int bias = 1 << j;
             while (threadIdx.x < bias) {
