@@ -178,7 +178,7 @@ int large_gauss_test(int argc, char **argv){
     parameter to control how many trials we run. */
 
     int nChannels = 2;      // Can set as the number of trials
-    int N = 1e7;        // Can set how many data points arbitrarily
+    int N = 1e6;        // Can set how many data points arbitrarily
     int impulse_length = GAUSSIAN_SIZE;
 
 #endif
@@ -691,7 +691,7 @@ int main(int argc, char **argv){
     // if you are using a shared computer. You may ignore or remove these
     // functions if you are running on your local machine.
     TA_Utilities::select_coldest_GPU();
-    int max_time_allowed_in_seconds = 20;
+    int max_time_allowed_in_seconds = 10;
     TA_Utilities::enforce_time_limit(max_time_allowed_in_seconds);
 
     return large_gauss_test(argc, argv);
