@@ -116,9 +116,6 @@ cudaMaximumKernel(cufftComplex *out_data, float *max_abs_val,
     __shared__ float data[1024];
 
     while (i < padded_length) {
-            // if (i == 100) printf("%d max\n", &i);
-        
-        // data[threadIdx.x] = 0;
 
         data[threadIdx.x] = out_data[i].x;
         __syncthreads();
