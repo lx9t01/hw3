@@ -16,14 +16,13 @@
 
 #include "ta_utilities.hpp"
 
-
 using std::cerr;
 using std::cout;
 using std::endl;
 
 const float PI = 3.14159265358979;
 
-#define AUDIO_ON 0
+#define AUDIO_ON 1
 
 #if AUDIO_ON
     #include <sndfile.h>
@@ -179,7 +178,7 @@ int large_gauss_test(int argc, char **argv){
     parameter to control how many trials we run. */
 
     int nChannels = 2;      // Can set as the number of trials
-    int N = 1e5;        // Can set how many data points arbitrarily
+    int N = 1e7;        // Can set how many data points arbitrarily
     int impulse_length = GAUSSIAN_SIZE;
 
 #endif
@@ -242,7 +241,7 @@ int large_gauss_test(int argc, char **argv){
     cufftComplex *dev_impulse_v;
     cufftComplex *dev_out_data;
 
-    /* TODOok: Allocate memory for these three arrays on the GPU. 
+    /* TODO ok: Allocate memory for these three arrays on the GPU. 
 
     Note that we need to allocate more memory than on Homework 1,
     due to the padding necessary for the FFT convolution. 
@@ -252,6 +251,7 @@ int large_gauss_test(int argc, char **argv){
     cudaMalloc((void**) &dev_input_data, sizeof(cufftComplex) * padded_length); 
     cudaMalloc((void**) &dev_impulse_v, sizeof(cufftComplex) * padded_length);
     cudaMalloc((void**) &dev_out_data, sizeof(cufftComplex) * padded_length);
+
 
 
 
@@ -385,7 +385,7 @@ int large_gauss_test(int argc, char **argv){
 
 
 
-        /* TODOok: Copy this channel's input data (stored in input_data)
+        /* TODO ok: Copy this channel's input data (stored in input_data)
         from host memory to the GPU. 
 
         Note that input_data only stores
@@ -396,7 +396,8 @@ int large_gauss_test(int argc, char **argv){
 
 
 
-        /* Copy this channel's impulse response data (stored in impulse_data)
+
+        /* TODO ok: Copy this channel's impulse response data (stored in impulse_data)
         from host memory to the GPU. 
 
         Like input_data, impulse_data
@@ -407,7 +408,8 @@ int large_gauss_test(int argc, char **argv){
         cudaMemcpy(dev_impulse_v, impulse_data, impulse_length * sizeof(cufftComplex), cudaMemcpyHostToDevice);
 
 
-        /* We're only copying to part of the allocated
+
+        /* TODO ok: We're only copying to part of the allocated
         memory regions on the GPU above, and we still need to zero-pad.
         (See Lecture 9 for details on padding.)
         Set the rest of the memory regions to 0 (recommend using cudaMemset).
@@ -415,17 +417,20 @@ int large_gauss_test(int argc, char **argv){
         cudaMemset(dev_input_data + N , 0, (padded_length - N) * sizeof(cufftComplex));
         cudaMemset(dev_impulse_v + impulse_length, 0, (padded_length - impulse_length) * sizeof(cufftComplex));
 
-        /* Create a cuFFT plan for the forward and inverse transforms. 
+
+        /* TODO ok: Create a cuFFT plan for the forward and inverse transforms. 
         (You can use the same plan for both, as is done in the lecture examples.)
         */
         cufftHandle plan;
         int batch = 1;
         gpuFFTchk(cufftPlan1d(&plan, padded_length, CUFFT_C2C, batch));
 
-        /* Run the forward DFT on the input signal and the impulse response. 
+
+        /* TODO: Run the forward DFT on the input signal and the impulse response. 
         (Do these in-place.) */
         gpuFFTchk(cufftExecC2C(plan, dev_input_data, dev_input_data, CUFFT_FORWARD));
         gpuFFTchk(cufftExecC2C(plan, dev_impulse_v, dev_impulse_v, CUFFT_FORWARD));
+
 
 
 
@@ -440,7 +445,7 @@ int large_gauss_test(int argc, char **argv){
         // Check for errors on kernel call
         cudaError err = cudaGetLastError();
         if  (cudaSuccess != err){
-                cerr << "Error prodscale " << cudaGetErrorString(err) << endl;
+                cerr << "Error " << cudaGetErrorString(err) << endl;
         } else {
                 cerr << "No kernel error detected" << endl;
         }
@@ -450,13 +455,16 @@ int large_gauss_test(int argc, char **argv){
 
 
 
-        /* Run the inverse DFT on the output signal. 
+        /* TODO: Run the inverse DFT on the output signal. 
         (Do this in-place.) */
         gpuFFTchk(cufftExecC2C(plan, dev_out_data, dev_out_data, CUFFT_INVERSE));
 
 
-        /* Destroy the cuFFT plan. */
+
+
+        /* TODO: Destroy the cuFFT plan. */
         gpuFFTchk(cufftDestroy(plan));
+
 
         // For testing and timing-control purposes only
         gpuErrchk( cudaMemcpy( output_data_testarr, dev_out_data, padded_length * sizeof(cufftComplex), cudaMemcpyDeviceToHost));
@@ -558,10 +566,12 @@ int large_gauss_test(int argc, char **argv){
         (You only need enough space for one floating-point number.) */
         cudaMalloc((void**) &dev_max_abs_val, 1 * sizeof(float)); 
 
+
         /* TODO 2 ok: Set it to 0 in preparation for running. 
         (Recommend using cudaMemset) */
         cudaMemset(dev_max_abs_val, 0, 1 * sizeof(float));
         printf("init dev_max_abs_val\n");
+
 
         /* NOTE: This is a function in the fft_convolve_cuda.cu file,
         where you'll fill in the kernel call for finding the maximum
@@ -572,7 +582,7 @@ int large_gauss_test(int argc, char **argv){
         // Check for errors on kernel call
         err = cudaGetLastError();
         if  (cudaSuccess != err){
-                cerr << "Error max " << cudaGetErrorString(err) << endl;
+                cerr << "Error " << cudaGetErrorString(err) << endl;
         } else {
                 cerr << "No kernel error detected" << endl;
         }
@@ -587,7 +597,7 @@ int large_gauss_test(int argc, char **argv){
         // Check for errors on kernel call
         err = cudaGetLastError();
         if  (cudaSuccess != err){
-                cerr << "Error divide " << cudaGetErrorString(err) << endl;
+                cerr << "Error " << cudaGetErrorString(err) << endl;
         } else {
                 cerr << "No kernel error detected" << endl;
         }
@@ -596,19 +606,23 @@ int large_gauss_test(int argc, char **argv){
         printf("before stop timer\n");
         STOP_RECORD_TIMER(gpu_time_ms_norm);
         printf("timer stopped\n");
+
         // For testing purposes only
         gpuErrchk( cudaMemcpy(&max_abs_val_fromGPU, 
             dev_max_abs_val, 1 * sizeof(float), cudaMemcpyDeviceToHost) );
         printf("memcopied\n");
 
 
-        /* TODOok: Now that kernel calls have finished, copy the output
+
+        /* TODO ok: Now that kernel calls have finished, copy the output
         signal back from the GPU to host memory. (We store this channel's
         result in output_data on the host.)
 
         Note that we have a padded-length signal, so be careful of the
         size of the memory copy. */
         cudaMemcpy(output_data, dev_out_data, padded_length * sizeof(cufftComplex), cudaMemcpyDeviceToHost);
+
+
 
 
         cout << endl;
@@ -671,6 +685,15 @@ int large_gauss_test(int argc, char **argv){
 
 
 int main(int argc, char **argv){
+    // These functions allow you to select the least utilized GPU
+    // on your system as well as enforce a time limit on program execution.
+    // Please leave these enabled as a courtesy to your fellow classmates
+    // if you are using a shared computer. You may ignore or remove these
+    // functions if you are running on your local machine.
+    TA_Utilities::select_coldest_GPU();
+    int max_time_allowed_in_seconds = 10;
+    TA_Utilities::enforce_time_limit(max_time_allowed_in_seconds);
+
     return large_gauss_test(argc, argv);
 }
 
