@@ -22,11 +22,12 @@ using std::endl;
 
 const float PI = 3.14159265358979;
 
-#define AUDIO_ON 0
+#define AUDIO_ON 1
 
 #if AUDIO_ON
     #include <sndfile.h>
 #endif
+
 
 
 float gaussian(float x, float mean, float std){
