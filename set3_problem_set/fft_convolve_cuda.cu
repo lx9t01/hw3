@@ -124,8 +124,8 @@ cudaMaximumKernel(cufftComplex *out_data, float *max_abs_val,
         // int bias = l / 2;
         l /= 2;
         if (threadIdx.x < l) {
-            data[threadIdx.x] = (fabsf(data[threadIdx.x])>fabsf(data[threadIdx.x + bias]))? \
-                         data[threadIdx.x]:data[threadIdx.x + bias];
+            data[threadIdx.x] = (fabsf(data[threadIdx.x])>fabsf(data[threadIdx.x + l]))? \
+                         data[threadIdx.x]:data[threadIdx.x + l];
         }
         __syncthreads();
         // l /= 2;
