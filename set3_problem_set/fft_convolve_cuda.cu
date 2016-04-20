@@ -123,13 +123,13 @@ cudaMaximumKernel(cufftComplex *out_data, float *max_abs_val,
         while (l > 1) {
             int bias = l / 2;
             if (threadIdx.x < bias) {
-                data[threadIdx.x] = (abs(data[threadIdx.x])>abs(data[threadIdx.x + bias]))? \
+                data[threadIdx.x] = (fabsf(data[threadIdx.x])>fabsf(data[threadIdx.x + bias]))? \
                         data[threadIdx.x]:data[threadIdx.x + bias];
                 __syncthreads();
             }
             l /= 2;
         }
-        atomicMax(max_abs_val, fabs(data[0]));
+        atomicMax(max_abs_val, fabsf(data[0]));
         i += blockDim.x * gridDim.x;
     }
 }
